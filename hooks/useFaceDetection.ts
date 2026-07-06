@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import * as faceapi from "face-api.js";
+import * as faceapi from "@vladmandic/face-api";
 
 interface UseFaceDetectionReturn {
   faceDetected: boolean;
