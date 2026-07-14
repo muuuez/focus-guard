@@ -3,6 +3,7 @@
 import { useWebcam } from "@/hooks/useWebcam";
 import { useFaceDetection } from "@/hooks/useFaceDetection";
 import { useObjectDetection } from "@/hooks/useObjectDetection";
+import { useFocusScore } from "@/hooks/useFocusScore";
 
 export default function SessionMonitor() {
   const { videoRef, status, errorMessage, stopCamera } = useWebcam();
@@ -10,6 +11,11 @@ export default function SessionMonitor() {
     useFaceDetection(videoRef);
   const { phoneDetected, isLoadingModel: isLoadingObjectModel } =
     useObjectDetection(videoRef);
+
+  const { focusScore, rating, sessionSeconds, events, recentFocusScore, recentTrend } = useFocusScore(
+    faceDetected,
+    phoneDetected
+  );
 
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
@@ -68,6 +74,14 @@ export default function SessionMonitor() {
               ) : (
                 <span className="text-gray-400">No face visible</span>
               )}
+            </div>
+
+            {/* Debug display for useFocusScore – will be replaced by real dashboard UI on Day 5 */}
+            <div className="mt-4 space-y-1 rounded-lg border bg-gray-50 p-3 font-mono text-xs text-gray-700">
+              <p>Overall Focus: <strong>{focusScore}%</strong> (Rating: {rating})</p>
+              <p>Recent Focus (60s): <strong>{recentFocusScore}%</strong> (Trend: {recentTrend})</p>
+              <p>Session: {sessionSeconds}s</p>
+              <p>Distraction events logged: {events.length}</p>
             </div>
 
             <button
