@@ -27,7 +27,8 @@ interface UseFocusScoreReturn {
  */
 export function useFocusScore(
   faceDetected: boolean,
-  phoneDetected: boolean
+  phoneDetected: boolean,
+  status: "loading" | "ready" | "error" | "stopped"
 ): UseFocusScoreReturn {
   // ---- 1. State we expose to the caller ----
   const [focusScore, setFocusScore] = useState(100);
@@ -83,6 +84,8 @@ export function useFocusScore(
 
   // ---- 4. Main tick every 1 second ----
   useEffect(() => {
+    if (status !== "ready") return;
+
     const interval = setInterval(() => {
       // a. Classify this second – phone detection takes priority
       let classification: "focused" | "looking_away" | "distracted";
@@ -178,7 +181,7 @@ export function useFocusScore(
 
     // Cleanup the interval when the component unmounts or deps change
     return () => clearInterval(interval);
-  }, [faceDetected, phoneDetected, syncState]);
+  }, [faceDetected, phoneDetected, syncState, status]);
 
   return { focusScore, rating, sessionSeconds, events, recentFocusScore, recentTrend };
 }
