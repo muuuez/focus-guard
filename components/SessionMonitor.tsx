@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useWebcam } from "@/hooks/useWebcam";
 import { useFaceDetection } from "@/hooks/useFaceDetection";
 import { useObjectDetection } from "@/hooks/useObjectDetection";
@@ -8,7 +9,9 @@ import { Badge } from "@/components/ui/FocusBadge";
 import { FocusGauge } from "@/components/ui/FocusGauge";
 import EventLog from "@/components/ui/EventLog";
 import StatCard from "@/components/ui/StatCard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { getAllSessions, clearAllSessions, type SessionRecord } from "@/lib/sessionStorage";
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -34,6 +37,23 @@ export default function SessionMonitor() {
     : recentTrend === "down"
       ? <TrendingDown className="h-4 w-4 text-red-400" />
       : <Minus className="h-4 w-4 text-slate-400" />;
+
+  // ── Session history ──────────────────────────────────────────────────────────
+  const [pastSessions, setPastSessions] = useState<SessionRecord[]>([]);
+
+  // Fetch the persisted history whenever the session ends.  Because the save in
+  // useFocusScore writes to localStorage synchronously before this effect runs,
+  // the just-completed session is already included in the returned list.
+  useEffect(() => {
+    if (status === "stopped") {
+      setPastSessions(getAllSessions());
+    }
+  }, [status]);
+
+  function handleClearHistory() {
+    clearAllSessions();
+    setPastSessions([]);
+  }
 
   return (
     <>
@@ -145,14 +165,67 @@ export default function SessionMonitor() {
       )}
 
       {status === "stopped" && (
-        <main className="flex min-h-screen items-center justify-center p-6">
-          <div className="w-full max-w-lg">
+        <main className="flex min-h-screen items-start justify-center p-6 pt-12">
+          <div className="w-full max-w-lg space-y-6">
             <StatCard
               sessionSeconds={sessionSeconds}
               focusScore={focusScore}
               eventsCount={events.length}
               rating={rating}
             />
+
+            {/* ── Session history (only shown if there are past sessions) ── */}
+            {pastSessions.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Past Sessions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {pastSessions.slice(0, 5).map((s) => (
+                    <div
+                      key={s.id}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span
+                          className={`shrink-0 w-2 h-2 rounded-full ${
+                            s.rating === "good"
+                              ? "bg-green-500"
+                              : s.rating === "okay"
+                                ? "bg-amber-500"
+                                : "bg-red-500"
+                          }`}
+                        />
+                        <span className="text-muted-foreground truncate">
+                          {new Date(s.date).toLocaleDateString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="font-mono tabular-nums text-muted-foreground">
+                          {formatTime(s.sessionSeconds)}
+                        </span>
+                        <span className="font-mono tabular-nums w-9 text-right">
+                          {s.focusScore}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+
+                  <button
+                    onClick={handleClearHistory}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Clear history
+                  </button>
+                </CardContent>
+              </Card>
+            )}
+
             <button
               onClick={() => window.location.reload()}
               className="mt-6 w-full rounded-lg bg-blue-600 px-4 py-3 text-white font-semibold hover:bg-blue-700 transition-colors"

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { saveSession } from "@/lib/sessionStorage";
+
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 interface FocusEvent {
@@ -182,6 +184,26 @@ export function useFocusScore(
     // Cleanup the interval when the component unmounts or deps change
     return () => clearInterval(interval);
   }, [faceDetected, phoneDetected, syncState, status]);
+
+  // ---- 5. Persist the session as soon as the user stops ----
+  // We track a ref for the previous status so this effect only fires on the
+  // transition to "stopped", not on every re-render while stopped.
+  const prevStatusRef = useRef(status);
+  useEffect(() => {
+    if (prevStatusRef.current !== "stopped" && status === "stopped") {
+      saveSession({
+        // crypto.randomUUID() is available in modern browsers; fall back to
+        // a timestamp-based ID in environments where it isn't.
+        id: crypto.randomUUID?.() ?? Date.now().toString(),
+        date: new Date().toISOString(),
+        sessionSeconds,
+        focusScore,
+        rating,
+        eventsCount: events.length,
+      });
+    }
+    prevStatusRef.current = status;
+  }, [status, sessionSeconds, focusScore, rating, events]);
 
   return { focusScore, rating, sessionSeconds, events, recentFocusScore, recentTrend };
 }
