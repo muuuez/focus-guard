@@ -1,39 +1,153 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* ── Light mode (default) ───────────────────────────────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --destructive-foreground: oklch(1 0 0);
+  --page: #F7F8FA;
+  --surface: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --border-subtle: #E4E7EC;
+  --text-primary: #101828;
+  --text-secondary: #667085;
+  --text-tertiary: #98A2B3;
+  --accent: #4F7CFF;
+  --accent-hover: #3D66E8;
+  --track: #E4E7EC;
+
+  --good: #12B76A;
+  --good-bg: #ECFDF3;
+  --okay: #F79009;
+  --okay-bg: #FFFAEB;
+  --bad: #F04438;
+  --bad-bg: #FEF3F2;
+
+  /* Badge system — consumed by FocusBadge component */
+  --color-success-accent: #12B76A;
+  --color-success-foreground: #FFFFFF;
+  --color-success-soft: #ECFDF3;
+  --color-warning-accent: #F79009;
+  --color-warning-foreground: #FFFFFF;
+  --color-warning-soft: #FFFAEB;
+  --color-destructive-accent: #F04438;
+  --color-destructive-foreground: #FFFFFF;
+  --color-destructive-soft: #FEF3F2;
+
+  --color-primary-accent: #4F7CFF;
+  --color-primary-soft: #EEF2FF;
+  --color-info-accent: #4F7CFF;
+  --color-info-soft: #EEF2FF;
+
+  --bg-console: #FFFFFF;
+  --border-console: #E4E7EC;
+  --text-console-header: #98A2B3;
+  --text-console-muted: #98A2B3;
 }
 
+/* ── Dark mode ──────────────────────────────────────────────────────────────── */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #0B0D12;
+    --surface: #12151C;
+    --surface-raised: #171B23;
+    --border-subtle: #262B36;
+    --text-primary: #F0F2F5;
+    --text-secondary: #94989E;
+    --text-tertiary: #5D6470;
+    --accent: #4F7CFF;
+    --accent-hover: #3D66E8;
+    --track: #262B36;
+
+    --good: #12B76A;
+    --good-bg: #0D2818;
+    --okay: #F79009;
+    --okay-bg: #2D2008;
+    --bad: #F04438;
+    --bad-bg: #2D1210;
+
+    --color-success-accent: #12B76A;
+    --color-success-foreground: #FFFFFF;
+    --color-success-soft: #0D2818;
+    --color-warning-accent: #F79009;
+    --color-warning-foreground: #FFFFFF;
+    --color-warning-soft: #2D2008;
+    --color-destructive-accent: #F04438;
+    --color-destructive-foreground: #FFFFFF;
+    --color-destructive-soft: #2D1210;
+
+    --color-primary-accent: #4F7CFF;
+    --color-primary-soft: #1A2340;
+    --color-info-accent: #4F7CFF;
+    --color-info-soft: #1A2340;
+
+    --bg-console: #12151C;
+    --border-console: #262B36;
+    --text-console-header: #5D6470;
+    --text-console-muted: #5D6470;
+  }
+}
+
+/* ── Tailwind v4 theme — maps CSS vars to utility classes ───────────────────── */
+
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-destructive-foreground: oklch(1 0 0);
-  --color-color-destructive-foreground: var(--color-destructive-foreground);
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border-subtle: var(--border-subtle);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-track: var(--track);
+  --color-good: var(--good);
+  --color-good-bg: var(--good-bg);
+  --color-okay: var(--okay);
+  --color-okay-bg: var(--okay-bg);
+  --color-bad: var(--bad);
+  --color-bad-bg: var(--bad-bg);
+  --color-bg-console: var(--bg-console);
+  --color-border-console: var(--border-console);
+  --color-text-console-header: var(--text-console-header);
+  --color-text-console-muted: var(--text-console-muted);
+
+  /* Compat aliases for existing Tailwind classes used in components */
+  --color-background: var(--page);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text-primary);
+  --color-border: var(--border-subtle);
+  --color-primary: var(--accent);
+  --color-primary-foreground: #FFFFFF;
+  --color-destructive: var(--bad);
+  --color-destructive-foreground: #FFFFFF;
+  --color-muted: var(--surface-raised);
+  --color-muted-foreground: var(--text-secondary);
+  --color-secondary: var(--surface-raised);
+  --color-secondary-foreground: var(--text-primary);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ── Animations ─────────────────────────────────────────────────────────────── */
+
+@keyframes slide-up-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.dark {
-  --destructive-foreground: oklch(1 0 0);
-}
-
-@keyframes shimmer2 {
-  0% { background-position: 0% 0%; }
-  100% { background-position: -200% 0%; }
-}
+/* ── Body ────────────────────────────────────────────────────────────────────── */
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--page);
+  color: var(--text-primary);
+  font-family: var(--font-sans), sans-serif;
 }

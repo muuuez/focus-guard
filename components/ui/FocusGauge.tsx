@@ -28,11 +28,25 @@ export interface FocusGaugeProps extends Omit<SVGProps<SVGSVGElement>, 'classNam
       }
 }
 
+const REFINED_COLORS: Record<string, string> = {
+  danger: '#F04438',
+  warning: '#F79009',
+  info: '#4F7CFF',
+  success: '#12B76A',
+}
+
+const REFINED_TRACK: Record<string, string> = {
+  danger: 'rgba(240,68,56,0.15)',
+  warning: 'rgba(247,144,9,0.15)',
+  info: 'rgba(79,124,255,0.15)',
+  success: 'rgba(18,183,106,0.15)',
+}
+
 function FocusGauge({
   value,
   size = '100%',
   gapPercent = 5,
-  strokeWidth = 10,
+  strokeWidth = 6,
   equal = false,
   showValue = true,
 
@@ -40,7 +54,7 @@ function FocusGauge({
   secondary,
 
   transition = {
-    length: 1000,
+    length: 500,
     step: 200,
     delay: 0
   },
@@ -109,101 +123,43 @@ function FocusGauge({
     }
   }
 
-  const primaryStroke = () => {
-    if (!primary) {
-      return strokePercent <= 25
-        ? '#dc2626'
-        : strokePercent <= 50
-          ? '#f59e0b'
-          : strokePercent <= 75
-            ? '#3b82f6'
-            : '#22c55e'
+  const resolveColor = (
+    val: typeof primary,
+    fallbackKey: 'danger' | 'warning' | 'info' | 'success',
+  ): string => {
+    if (!val) {
+      if (strokePercent <= 25) return REFINED_COLORS.danger
+      if (strokePercent <= 50) return REFINED_COLORS.warning
+      if (strokePercent <= 75) return REFINED_COLORS.info
+      return REFINED_COLORS.success
     }
-  
-    else if (typeof primary === 'string') {
-      return primary === 'danger'
-        ? '#dc2626'
-        : primary === 'warning'
-          ? '#f59e0b'
-          : primary === 'info'
-            ? '#3b82f6'
-            : primary === 'success'
-              ? '#22c55e'
-              : primary
+    if (typeof val === 'string') {
+      return REFINED_COLORS[val] || val
     }
-  
-    else if (typeof primary === 'object') {
-      const primaryKeys = Object.keys(primary).sort((a, b) => Number(a) - Number(b))
-      let primaryStroke = ''
-      for (let i = 0; i < primaryKeys.length; i++) {
-        const currentKey = Number(primaryKeys[i])
-        const nextKey = Number(primaryKeys[i + 1])
-  
-        if (strokePercent >= currentKey && (strokePercent < nextKey || !nextKey)) {
-          primaryStroke = primary[currentKey] || ''
-  
-          if (['danger', 'warning', 'success', 'info'].includes(primaryStroke)) {
-            primaryStroke = {
-              danger: '#dc2626',
-              warning: '#f59e0b',
-              info: '#3b82f6',
-              success: '#22c55e'
-            }[primaryStroke] || primaryStroke
-          }
-  
-          break
-        }
+    const keys = Object.keys(val).sort((a, b) => Number(a) - Number(b))
+    for (let i = 0; i < keys.length; i++) {
+      const currentKey = Number(keys[i])
+      const nextKey = Number(keys[i + 1])
+      if (strokePercent >= currentKey && (strokePercent < nextKey || !nextKey)) {
+        const v = val[currentKey] || ''
+        return REFINED_COLORS[v] || v
       }
-      return primaryStroke
     }
+    return REFINED_COLORS[fallbackKey]
   }
 
-  const secondaryStroke = () => {
-    if (!secondary) {
-      return '#9ca3af'
+  const resolveTrack = (val: typeof secondary, key: 'danger' | 'warning' | 'info' | 'success'): string => {
+    if (!val) return 'var(--track)'
+    if (typeof val === 'string') {
+      return REFINED_TRACK[val] || val
     }
-  
-    else if (typeof secondary === 'string') {
-      return secondary === 'danger'
-        ? '#fecaca'
-        : secondary === 'warning'
-          ? '#fde68a'
-          : secondary === 'info'
-            ? '#bfdbfe'
-            : secondary === 'success'
-              ? '#bbf7d0'
-              : secondary
-    }
-  
-    else if (typeof secondary === 'object') {
-      const stroke_percent_secondary = 100 - strokePercent
-      const secondaryKeys = Object.keys(secondary).sort((a, b) => Number(a) - Number(b))
-      let secondaryStroke = ''
-  
-      for (let i = 0; i < secondaryKeys.length; i++) {
-        const currentKey = Number(secondaryKeys[i])
-        const nextKey = Number(secondaryKeys[i + 1])
-  
-        if (stroke_percent_secondary >= currentKey && (stroke_percent_secondary < nextKey || !nextKey)) {
-          secondaryStroke = secondary[currentKey] || ''
-  
-          if (['danger', 'warning', 'success', 'info'].includes(secondaryStroke)) {
-            secondaryStroke = {
-              danger: '#fecaca',
-              warning: '#fde68a',
-              info: '#bfdbfe',
-              success: '#bbf7d0'
-            }[secondaryStroke] || secondaryStroke
-          }
-  
-          break
-        }
-      }
-      return secondaryStroke
-    }
+    return 'var(--track)'
   }
 
-  const primaryOpacity = () => {
+  const primaryStrokeColor = resolveColor(primary, 'info')
+  const secondaryStrokeColor = resolveTrack(secondary, 'info')
+
+  const primaryOpacityVal = () => {
     if (
       offsetFactor > 0 &&
       strokePercent < gapPercent * 2 * offsetFactor &&
@@ -213,7 +169,7 @@ function FocusGauge({
     } else return 1
   }
 
-  const secondaryOpacity = () => {
+  const secondaryOpacityVal = () => {
     if (
       (offsetFactor === 0 && strokePercent > 100 - gapPercent * 2) ||
       (offsetFactor > 0 &&
@@ -229,7 +185,7 @@ function FocusGauge({
     strokeLinejoin: 'round',
     strokeDashoffset: 0,
     strokeWidth: strokeWidth,
-    transition: `all ${transition?.length}ms ease ${transition?.delay}ms`,
+    transition: `stroke-dasharray ${transition?.length}ms ease-out, opacity ${transition?.length}ms ease-out`,
     transformOrigin: '50% 50%',
     shapeRendering: 'geometricPrecision'
   }
@@ -255,8 +211,8 @@ function FocusGauge({
           ...circleStyles,
           strokeDasharray: secondaryStrokeDasharray(),
           transform: secondaryTransform(),
-          stroke: secondaryStroke(),
-          opacity: secondaryOpacity()
+          stroke: secondaryStrokeColor,
+          opacity: secondaryOpacityVal()
         }}
         className={cn('', typeof className === 'object' && className?.secondaryClassName)}
       />
@@ -269,8 +225,8 @@ function FocusGauge({
           ...circleStyles,
           strokeDasharray: primaryStrokeDasharray(),
           transform: primaryTransform(),
-          stroke: primaryStroke(),
-          opacity: primaryOpacity()
+          stroke: primaryStrokeColor,
+          opacity: primaryOpacityVal()
         }}
         className={cn('', typeof className === 'object' && className?.primaryClassName)}
       />
@@ -283,8 +239,8 @@ function FocusGauge({
           dominantBaseline='middle'
           alignmentBaseline='central'
           fill='currentColor'
-          fontSize={36}
-          className={cn('font-semibold', typeof className === 'object' && className?.textClassName)}
+          fontSize={32}
+          className={cn('font-semibold tabular-nums', typeof className === 'object' && className?.textClassName)}
         >
           {Math.round(strokePercent)}
         </text>

@@ -18,6 +18,7 @@ interface UseFocusScoreReturn {
   events: FocusEvent[];
   recentFocusScore: number;
   recentTrend: "up" | "down" | "steady";
+  scoreHistory: Array<{ second: number; score: number }>;
 }
 
 // ── Hook ───────────────────────────────────────────────────────────────────────
@@ -39,6 +40,7 @@ export function useFocusScore(
   const [events, setEvents] = useState<FocusEvent[]>([]);
   const [recentFocusScore, setRecentFocusScore] = useState(100);
   const [recentTrend, setRecentTrend] = useState<"up" | "down" | "steady">("steady");
+  const [scoreHistory, setScoreHistory] = useState<Array<{ second: number; score: number }>>([]);
 
   // ---- 2. Mutable refs for counters that change every second ----
   // We keep these in refs (not state) so the interval callback always reads
@@ -160,6 +162,16 @@ export function useFocusScore(
           : Math.round((focusedInWindow / windowSize) * 100);
       setRecentFocusScore(newRecentFocusScore);
 
+      // i. Accumulate a point for the line chart every 5 seconds so the chart
+      //    doesn't re-render every tick.  The ref ensures we don't lose data
+      //    between snapshots.
+      if (totalTicksRef.current % 5 === 0) {
+        setScoreHistory((prev) => [
+          ...prev,
+          { second: totalTicksRef.current, score: newRecentFocusScore },
+        ]);
+      }
+
       // g. Compute recentTrend by comparing the current window's score against
       //    the previous window's score.  Only compute once we have a full
       //    previous window (60 ticks of history before the current 60).
@@ -205,5 +217,5 @@ export function useFocusScore(
     prevStatusRef.current = status;
   }, [status, sessionSeconds, focusScore, rating, events]);
 
-  return { focusScore, rating, sessionSeconds, events, recentFocusScore, recentTrend };
+  return { focusScore, rating, sessionSeconds, events, recentFocusScore, recentTrend, scoreHistory };
 }

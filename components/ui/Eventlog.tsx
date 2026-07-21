@@ -1,7 +1,6 @@
 "use client";
 
 import { Info, AlertTriangle, CheckCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface EventEntry {
   type: "phone" | "looking_away" | "focus_streak";
@@ -15,35 +14,35 @@ interface EventLogProps {
 const eventConfig = {
   phone: {
     icon: AlertTriangle,
-    color: 'text-red-400',
+    color: 'text-bad',
     label: 'PHONE',
-    message: 'Phone detected',
+    message: 'PHONE DETECTED',
   },
   looking_away: {
     icon: AlertTriangle,
-    color: 'text-yellow-400',
+    color: 'text-okay',
     label: 'AWAY',
-    message: 'Looked away from screen',
+    message: 'LOOKED AWAY',
   },
   focus_streak: {
     icon: CheckCircle,
-    color: 'text-green-400',
+    color: 'text-good',
     label: 'STREAK',
-    message: 'Focus streak milestone reached',
+    message: 'FOCUS STREAK',
   },
 };
 
 function EventLog({ events }: EventLogProps) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-black/40">
-      <div className="border-b border-slate-800 px-4 py-2 text-xs font-mono text-slate-500">
-        Event Log
+    <div className="border border-white/10 bg-black/60">
+      <div className="border-b border-white/10 px-4 py-2 text-[10px] font-mono text-white/50 tracking-wider">
+        EVENT LOG
       </div>
-      <div className="max-h-48 overflow-y-auto p-3 font-mono text-xs space-y-1.5">
+      <div className="max-h-48 overflow-y-auto p-3 font-mono text-[11px] leading-relaxed space-y-1">
         {events.length === 0 ? (
-          <div className="flex items-center gap-2 text-slate-500 py-2">
-            <Info className="h-3.5 w-3.5" />
-            <span>No distractions yet</span>
+          <div className="flex items-center gap-2 text-white/30 py-2">
+            <Info className="h-3 w-3" />
+            <span className="tracking-wider">NO DISTRACTIONS YET</span>
           </div>
         ) : (
           [...events].reverse().map((event, i) => {
@@ -51,13 +50,16 @@ function EventLog({ events }: EventLogProps) {
             const time = new Date(event.timestamp).toLocaleTimeString();
             const Icon = config.icon;
             return (
-              <div key={i} className="flex items-start gap-2">
-                <span className="text-slate-600 shrink-0 w-16">{time}</span>
-                <div className={cn("flex items-center gap-1.5 font-bold shrink-0", config.color)}>
-                  <Icon className="h-3.5 w-3.5" />
-                  <span>[{config.label}]</span>
+              <div
+                key={event.timestamp + '-' + i}
+                className="flex items-start gap-2"
+              >
+                <span className="text-white/30 shrink-0 w-16 tabular-nums">{time}</span>
+                <div className={`flex items-center gap-1.5 shrink-0 ${config.color}`}>
+                  <Icon className="h-3 w-3" />
+                  <span className="tracking-wider">[{config.label}]</span>
                 </div>
-                <span className="text-slate-300">{config.message}</span>
+                <span className="text-white/50 tracking-wider">{config.message}</span>
               </div>
             );
           })
