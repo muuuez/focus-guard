@@ -118,9 +118,12 @@ export default function Hero() {
 
               {/* Description */}
               <div className="relative">
-                <p className="text-xs lg:text-base text-gray-300 mb-5 lg:mb-6 leading-relaxed font-mono opacity-80">
+                <p className="text-xs lg:text-base text-gray-300 leading-relaxed font-mono opacity-80">
                   Your webcam monitors your attention in real time. The system
                   scores your focus — no excuses, no distractions. Just data.
+                </p>
+                <p className="text-[9px] lg:text-[10px] text-white/40 mt-2 mb-5 lg:mb-6 leading-relaxed font-mono tracking-wider">
+                  ALL PROCESSING IS LOCAL — NO DATA LEAVES YOUR DEVICE
                 </p>
 
                 <div className="hidden lg:block absolute -left-4 top-1/2 w-3 h-3 border border-white opacity-30">

@@ -143,6 +143,10 @@ export default function SessionMonitor() {
                   )}
                 </div>
 
+                  <div className="text-[8px] font-mono text-white/30 tracking-wider">
+                  ALL PROCESSING IS LOCAL — NO DATA LEAVES YOUR DEVICE
+                </div>
+
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-2xl font-mono tabular-nums tracking-wider text-white/90">
                     {formatTime(sessionSeconds)}
