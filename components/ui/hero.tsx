@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import ContourBackground from "@/components/ui/ContourBackground";
+import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import { getAllSessions } from "@/lib/sessionStorage";
 import type { SessionRecord } from "@/lib/sessionStorage";
 
@@ -38,13 +38,8 @@ export default function Hero() {
   return (
     <>
       <main className="relative h-screen overflow-hidden bg-black">
-        {/* ── Contour Background (desktop) ── */}
-        <div className="absolute inset-0 w-full h-full hidden lg:block">
-          <ContourBackground />
-        </div>
-
-        {/* ── Mobile stars background ── */}
-        <div className="absolute inset-0 w-full h-full lg:hidden stars-bg" />
+        {/* ── Animated pixel-star background ── */}
+        <AnimatedBackground />
 
         {/* ── Top Header ── */}
         <div className="absolute top-0 left-0 right-0 z-20 border-b border-white/20">
@@ -222,27 +217,8 @@ export default function Hero() {
               );
             background-size: 3px 3px;
           }
-
-          .stars-bg {
-            background-image: radial-gradient(
-                1px 1px at 20% 30%,
-                white,
-                transparent
-              ),
-              radial-gradient(1px 1px at 60% 70%, white, transparent),
-              radial-gradient(1px 1px at 50% 50%, white, transparent),
-              radial-gradient(1px 1px at 80% 10%, white, transparent),
-              radial-gradient(1px 1px at 90% 60%, white, transparent),
-              radial-gradient(1px 1px at 33% 80%, white, transparent),
-              radial-gradient(1px 1px at 15% 60%, white, transparent),
-              radial-gradient(1px 1px at 70% 40%, white, transparent);
-            background-size: 200% 200%, 180% 180%, 250% 250%, 220% 220%,
-              190% 190%, 240% 240%, 210% 210%, 230% 230%;
-            background-position: 0% 0%, 40% 40%, 60% 60%, 20% 20%, 80% 80%,
-              30% 30%, 70% 70%, 50% 50%;
-            opacity: 0.3;
-          }
         `}</style>
+
       </main>
 
       {/* ── Session History Section ── */}

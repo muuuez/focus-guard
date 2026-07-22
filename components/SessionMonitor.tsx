@@ -81,7 +81,7 @@ export default function SessionMonitor() {
       )}
 
       {status === "ready" && (
-        <main className="h-screen overflow-hidden bg-black">
+        <main className="min-h-screen lg:h-screen lg:overflow-hidden bg-black">
           {/* ── Back link ── */}
           <div className="absolute top-3 left-3 z-30">
             <Link
@@ -92,8 +92,8 @@ export default function SessionMonitor() {
             </Link>
           </div>
 
-          <div className="h-full pt-14 pb-4 px-4 lg:px-6">
-            <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-4 lg:gap-6 h-full">
+          <div className="lg:h-full pt-14 pb-4 px-4 lg:px-6">
+            <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-4 lg:gap-6 lg:h-full">
               {/* ── Left column: video + timer + stop ── */}
               <div className="flex flex-col gap-3 lg:gap-4">
                 <div className="relative border border-white/20 overflow-hidden flex-none bg-black/80">
@@ -163,16 +163,16 @@ export default function SessionMonitor() {
 
               {/* ── Right column: gauges + chart + event log ── */}
               <div className="flex flex-col gap-4 lg:gap-5">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col items-center border border-white/10 p-3">
                     <div className="text-white/50 text-[9px] font-mono tracking-[0.15em] mb-2">OVERALL</div>
-                    <div className="w-28 h-28 lg:w-32 lg:h-32 text-white">
+                    <div className="w-full max-w-32 h-28 lg:h-32 text-white mx-auto">
                       <FocusGauge value={focusScore} showValue strokeWidth={6} />
                     </div>
                   </div>
                   <div className="flex flex-col items-center border border-white/10 p-3">
                     <div className="text-white/50 text-[9px] font-mono tracking-[0.15em] mb-2">LAST MIN</div>
-                    <div className="w-28 h-28 lg:w-32 lg:h-32 text-white">
+                    <div className="w-full max-w-32 h-28 lg:h-32 text-white mx-auto">
                       <FocusGauge value={recentFocusScore} showValue strokeWidth={6} />
                     </div>
                     <div className="mt-1">{trendIcon}</div>
