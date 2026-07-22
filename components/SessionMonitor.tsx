@@ -309,6 +309,7 @@ export default function SessionMonitor() {
                 focusScore={focusScore}
                 eventsCount={events.length}
                 rating={rating}
+                scoreHistory={scoreHistory}
               />
 
               {pastSessions.length > 0 && (
