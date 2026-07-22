@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import { getAllSessions } from "@/lib/sessionStorage";
@@ -17,7 +17,6 @@ export default function Hero() {
   const [sessionCount, setSessionCount] = useState(0);
   const [lastSession, setLastSession] = useState<SessionRecord | null>(null);
   const [showHistory, setShowHistory] = useState(false);
-  const historyRef = useRef<HTMLElement>(null);
 
   // ── Load session data on mount ──
   useEffect(() => {
@@ -29,10 +28,7 @@ export default function Hero() {
   }, []);
 
   function handleViewHistory() {
-    setShowHistory(true);
-    setTimeout(() => {
-      historyRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 150);
+    setShowHistory((prev) => !prev);
   }
 
   return (
@@ -97,7 +93,7 @@ export default function Hero() {
                   className="text-2xl lg:text-5xl font-bold text-white mb-3 lg:mb-4 leading-tight font-mono tracking-wider whitespace-nowrap lg:-ml-[5%]"
                   style={{ letterSpacing: "0.1em" }}
                 >
-                  FOCUS LOCKED
+                  FOCUS MODE
                 </h1>
               </div>
 
@@ -112,13 +108,12 @@ export default function Hero() {
               </div>
 
               {/* Description */}
-              <div className="relative">
+              <div className="relative mb-8">
                 <p className="text-xs lg:text-base text-gray-300 leading-relaxed font-mono opacity-80">
-                  Your webcam monitors your attention in real time. The system
-                  scores your focus — no excuses, no distractions. Just data.
-                </p>
-                <p className="text-[9px] lg:text-[10px] text-white/40 mt-2 mb-5 lg:mb-6 leading-relaxed font-mono tracking-wider">
-                  ALL PROCESSING IS LOCAL — NO DATA LEAVES YOUR DEVICE
+                  Your webcam monitors your attention in real time. All
+                  processing happens locally in your browser — no video or
+                  image data is uploaded, stored, or sent to any server.
+                  Session results are saved only on this device.
                 </p>
 
                 <div className="hidden lg:block absolute -left-4 top-1/2 w-3 h-3 border border-white opacity-30">
@@ -156,6 +151,30 @@ export default function Hero() {
                   FOCUS.SESSION
                 </span>
               </div>
+
+              {/* ── Inline history ── */}
+              {showHistory && lastSession && (
+                <div className="mt-6 overflow-hidden transition-all duration-300">
+                  <div className="flex items-center gap-2 mb-3 opacity-60">
+                    <div className="w-6 h-px bg-white" />
+                    <span className="text-white text-[9px] font-mono tracking-wider">
+                      HISTORY
+                    </span>
+                    <div className="flex-1 h-px bg-white" />
+                  </div>
+
+                  <div className="font-mono space-y-1.5">
+                    <p className="text-xs text-white/70 tracking-wider">
+                      {sessionCount} SESSION
+                      {sessionCount !== 1 ? "S" : ""} COMPLETED
+                    </p>
+                    <p className="text-[10px] text-white/40 tracking-wider">
+                      LAST: {formatDate(lastSession.date)} &mdash;{" "}
+                      {lastSession.focusScore}%
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -221,34 +240,6 @@ export default function Hero() {
 
       </main>
 
-      {/* ── Session History Section ── */}
-      {showHistory && sessionCount > 0 && lastSession && (
-        <section
-          ref={historyRef}
-          className="bg-black border-t border-white/10 py-12 px-6"
-        >
-          <div className="container mx-auto max-w-4xl">
-            <div className="flex items-center gap-2 mb-6 opacity-60">
-              <div className="w-8 h-px bg-white" />
-              <span className="text-white text-[10px] font-mono tracking-wider">
-                HISTORY
-              </span>
-              <div className="flex-1 h-px bg-white" />
-            </div>
-
-            <div className="font-mono text-sm text-white/80 space-y-2">
-              <p className="tracking-wider">
-                {sessionCount} SESSION
-                {sessionCount !== 1 ? "S" : ""} COMPLETED
-              </p>
-              <p className="text-white/50 text-[11px]">
-                LAST: {formatDate(lastSession.date)} &mdash;{" "}
-                {lastSession.focusScore}%
-              </p>
-            </div>
-          </div>
-        </section>
-      )}
     </>
   );
 }
