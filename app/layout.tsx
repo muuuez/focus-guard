@@ -18,14 +18,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Statora",
     description: "Webcam-based focus tracking for study sessions",
-    images: ["/og-image.png"],
+    images: ["/images/og-image.png"],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Statora",
     description: "Webcam-based focus tracking for study sessions",
-    images: ["/og-image.png"],
+    images: ["/images/og-image.png"],
   },
 };
 
