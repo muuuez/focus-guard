@@ -15,6 +15,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Statora",
   description: "Webcam-based focus tracking for study sessions",
+  openGraph: {
+    title: "Statora",
+    description: "Webcam-based focus tracking for study sessions",
+    images: ["/og-image.png"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Statora",
+    description: "Webcam-based focus tracking for study sessions",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
